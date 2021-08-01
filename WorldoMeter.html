@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>World-O-Meter</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #F5F5F5;
+    }
+    .container {
+      height: auto;
+      background: #fff;
+      margin: auto;
+      max-width: 90%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      padding-bottom: 4rem;
+    }
+    .country {
+      padding-top: 3rem;
+      padding-bottom: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    #logo {
+      margin-right: 10px;
+      width: 60px;
+      height: 40px;
+    }
+    #total,#deaths,#recovered {
+      padding-top: 6px;
+      font-size: 3rem;
+    }
+    #header {
+      font-family: 'Roboto';
+      color: #6f6f6f;
+      margin-top: 2rem;
+      font-size: 1.6rem;
+      font-weight: 300;
+    }
+    #total {
+      color: #B9b9b9
+    }
+    #deaths {
+      color: #696969;
+    }
+    #recovered {
+      color: #8aca2b;
+    }
+    a {
+      display: inline-block;
+      margin-top: 2rem;
+      width: 30%;
+      text-decoration: none;
+      padding: 10px;
+      background:#fd0e35;
+      color: #aaa;
+      font-weight: bold; 
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="country">
+      <img id="logo" src="https://www.worldometers.info/img/flags/small/tn_in-flag.gif" alt="india" />
+      <h1>India</h1>
+    </div>
+    <div class="content">
+      <p id="header">
+        Coronavirus Cases:
+      </p>
+      <h2 id="total"></h2>
+      <p id="header">
+        Deaths:
+      </p>
+      <h2 id="deaths"></h2>
+      <p id="header">
+        Recovered:
+      </p>
+      <h2 id="recovered"></h2>
+      <a class="btn" onclick="reload()"href="#">Refresh</a>
+    </div>
+
+  </div>
+  <script>
+    window.onload = ()=> {
+      init();
+    }
+    function init() {
+      let data2 = "";
+      let data1 = "";
+      let data3 = "";
+      const url ="https://api.covid19india.org/data.json";
+      fetch(url)
+      .then(
+        function(response) {
+          if (response.status !== 200) {
+            console.log('Looks like there was a problem. Status Code: ' +
+              response.status);
+            return;
+          }
+          // Examine the text in the response
+          response.json().then(function(data) {
+            //console.log(data.statewise);
+            const totalcases = separator(data.statewise[0].confirmed);
+            const active = separator(data.statewise[0].active);
+            const recovered = separator(data.statewise[0].recovered);
+            const deaths = separator(data.statewise[0].deaths);
+            document.getElementById('total').innerHTML = totalcases;
+            document.getElementById('deaths').innerHTML = deaths;
+            document.getElementById('recovered').innerHTML = recovered;
+          });
+        }
+      )
+      .catch(function(err) {
+        console.log('Fetch Error :-S', err);
+      });
+    }
+    function reload() {
+      empty();
+      init();
+    }
+    function empty() {
+      document.getElementById('total').innerHTML ="\u00A0";
+      document.getElementById('deaths').innerHTML = "\u00A0";
+      document.getElementById('recovered').innerHTML = "\u00A0";
+    }
+    function separator(numb) {
+      var str = numb.toString().split(".");
+      str[0] = str[0].replace(/\B(?=(\d{3})+(?!\d))/g,
+        ",");
+      return str.join(".");
+    }
+  </script>
+</body>
+</html>
